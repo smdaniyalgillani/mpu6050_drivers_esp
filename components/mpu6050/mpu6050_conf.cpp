@@ -2,7 +2,7 @@
 #include "mpu6050_conf.hpp"
 
 
-i2c_master_dev_handle_t mpu_dev_handle;
+
 float mpu6050::mpu6050_get_accel_scale(accel_range_t accel_range) {
     switch (accel_range) {
         case ACCEL_2G:  return 16384.0f;
@@ -24,7 +24,8 @@ float mpu6050::mpu6050_get_gyro_scale(gyro_range_t gyro_range) {
 }
 
 
-void mpu6050::config(accel_range_t accel_sel_, gyro_range_t gyro_sel_) {
+void mpu6050::config(i2c_master_dev_handle_t dev, accel_range_t accel_sel_, gyro_range_t gyro_sel_) {
+    mpu_dev_handle = dev;
     gyro_sel = gyro_sel_;
     accel_sel = accel_sel_;
 
