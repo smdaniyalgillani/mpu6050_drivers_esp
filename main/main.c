@@ -5,7 +5,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-#include "mpu6050_conf.h"
+#include "mpu6050_driver.h"
 
 #define TAG "MPU6050"
 
@@ -40,8 +40,8 @@ void esp32_mpu_config()
     
 
     ESP_ERROR_CHECK(i2c_master_bus_add_device(i2c_bus_handle, &mpu6050_config, &mpu_dev_handle));
-    config(&mpu6050, mpu_dev_handle,ACCEL_4G, GYRO_500DPS);
-    start(&mpu6050);
+    mpu_config(&mpu6050, mpu_dev_handle,ACCEL_4G, GYRO_500DPS);
+    mpu_start(&mpu6050);
     
 }
 
@@ -49,7 +49,7 @@ void app_main(void)
 {
     esp32_mpu_config();
     while (1) {
-        read(&mpu6050, ACCELEROMETER);
+        mpu_read(&mpu6050, ACCELEROMETER);
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }

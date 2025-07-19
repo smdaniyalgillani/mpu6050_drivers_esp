@@ -1,5 +1,5 @@
 #include "common_includes.h"
-#include "mpu6050_conf.h"
+#include "mpu6050_driver.h"
 
 
 
@@ -24,7 +24,7 @@ float mpu6050_get_gyro_scale(gyro_range_t gyro_range) {
 }
 
 
-void config(mpu6050_dev_t *mpu_dev ,i2c_master_dev_handle_t dev, accel_range_t accel_sel_, gyro_range_t gyro_sel_) {
+void mpu_config(mpu6050_dev_t *mpu_dev ,i2c_master_dev_handle_t dev, accel_range_t accel_sel_, gyro_range_t gyro_sel_) {
     mpu_dev->mpu_dev_handle = dev;
     mpu_dev->gyro_sel = gyro_sel_;
     mpu_dev->accel_sel = accel_sel_;
@@ -36,7 +36,7 @@ void config(mpu6050_dev_t *mpu_dev ,i2c_master_dev_handle_t dev, accel_range_t a
 
 }
 
-void start(mpu6050_dev_t *mpu_dev)
+void mpu_start(mpu6050_dev_t *mpu_dev)
 {
     // Wake up sensor from sleep writing 0x00 to power management register
     uint8_t wake_cmd[2] = {0x6B, 0x00};
@@ -45,7 +45,7 @@ void start(mpu6050_dev_t *mpu_dev)
 }
 
 
-void read(mpu6050_dev_t *mpu_dev, sensor_t sensor_type) {
+void mpu_read(mpu6050_dev_t *mpu_dev, sensor_t sensor_type) {
     uint8_t start_reg = 0x3B;  // Starting at ACCEL_XOUT_H
     uint8_t sensor_data[14];
 
