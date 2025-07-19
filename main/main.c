@@ -5,7 +5,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-#include "mpu6050_conf.hpp"
+#include "mpu6050_conf.h"
 
 #define TAG "MPU6050"
 
@@ -15,9 +15,10 @@
 
 i2c_master_bus_handle_t i2c_bus_handle;
 i2c_master_dev_handle_t mpu_dev_handle;
-
+mpu6050_dev_t mpu6050;
 void esp32_mpu_config()
 {
+    
     //Setup I2C Bus
     i2c_master_bus_config_t esp_i2c_conf = {
         .clk_source = I2C_CLK_SRC_DEFAULT,
@@ -39,17 +40,16 @@ void esp32_mpu_config()
     
 
     ESP_ERROR_CHECK(i2c_master_bus_add_device(i2c_bus_handle, &mpu6050_config, &mpu_dev_handle));
+    config(&mpu6050, mpu_dev_handle,ACCEL_4G, GYRO_500DPS);
+    start(&mpu6050);
+    
 }
 
-extern "C"
+void app_main(void)
 {
-    void app_main(void)
-    {
-        // esp32_mpu_config();
-        // while (1) {
-        //     mpu_read_data();  // Read and print sensor data
-        //     vTaskDelay(pdMS_TO_TICKS(1000));
-        // }
-
+    esp32_mpu_config();
+    while (1) {
+        read(&mpu6050, ACCELEROMETER);
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }

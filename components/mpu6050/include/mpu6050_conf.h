@@ -41,19 +41,18 @@ typedef enum {
     ALL = 4
 } sensor_t;
 
-class mpu6050 {
-    void config(i2c_master_dev_handle_t dev, accel_range_t accel_sel, gyro_range_t gyro_sel);
-    float mpu6050_get_accel_scale(accel_range_t accel_range);
-    float mpu6050_get_gyro_scale(gyro_range_t gyro_range);
-    
-    void start();
-    
-    void read(sensor_t sensor_type);
-
-    private:
+typedef struct {
     i2c_master_dev_handle_t mpu_dev_handle;
     gyro_range_t gyro_sel;
     accel_range_t accel_sel;
 
-};
+} mpu6050_dev_t;
+
+void config(mpu6050_dev_t *mpu_dev ,i2c_master_dev_handle_t dev, accel_range_t accel_sel_, gyro_range_t gyro_sel_);
+float mpu6050_get_accel_scale(accel_range_t accel_range);
+float mpu6050_get_gyro_scale(gyro_range_t gyro_range);
+
+void start();
+
+void read(mpu6050_dev_t *mpu_dev, sensor_t sensor_type);
 

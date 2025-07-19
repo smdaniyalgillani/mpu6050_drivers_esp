@@ -1,9 +1,9 @@
 #include "common_includes.h"
-#include "mpu6050_conf.hpp"
+#include "mpu6050_conf.h"
 
 
 
-float mpu6050::mpu6050_get_accel_scale(accel_range_t accel_range) {
+float mpu6050_get_accel_scale(accel_range_t accel_range) {
     switch (accel_range) {
         case ACCEL_2G:  return 16384.0f;
         case ACCEL_4G:  return 8192.0f;
@@ -13,7 +13,7 @@ float mpu6050::mpu6050_get_accel_scale(accel_range_t accel_range) {
     }
 }
 
-float mpu6050::mpu6050_get_gyro_scale(gyro_range_t gyro_range) {
+float mpu6050_get_gyro_scale(gyro_range_t gyro_range) {
     switch (gyro_range) {
         case GYRO_250DPS:  return 131.0f;
         case GYRO_500DPS:  return 65.5f;
@@ -24,32 +24,32 @@ float mpu6050::mpu6050_get_gyro_scale(gyro_range_t gyro_range) {
 }
 
 
-void mpu6050::config(i2c_master_dev_handle_t dev, accel_range_t accel_sel_, gyro_range_t gyro_sel_) {
-    mpu_dev_handle = dev;
-    gyro_sel = gyro_sel_;
-    accel_sel = accel_sel_;
+void config(mpu6050_dev_t *mpu_dev ,i2c_master_dev_handle_t dev, accel_range_t accel_sel_, gyro_range_t gyro_sel_) {
+    mpu_dev->mpu_dev_handle = dev;
+    mpu_dev->gyro_sel = gyro_sel_;
+    mpu_dev->accel_sel = accel_sel_;
 
-    uint8_t gyro_cfg[2] = {0x1B, gyro_sel};
-    uint8_t accel_cfg[2] = {0x1C, accel_sel};
-    ESP_ERROR_CHECK(i2c_master_transmit(mpu_dev_handle, gyro_cfg, sizeof(gyro_cfg), -1));
-    ESP_ERROR_CHECK(i2c_master_transmit(mpu_dev_handle, accel_cfg, sizeof(accel_cfg), -1));
+    uint8_t gyro_cfg[2] = {0x1B, mpu_dev->gyro_sel};
+    uint8_t accel_cfg[2] = {0x1C, mpu_dev->accel_sel};
+    ESP_ERROR_CHECK(i2c_master_transmit(mpu_dev->mpu_dev_handle, gyro_cfg, sizeof(gyro_cfg), -1));
+    ESP_ERROR_CHECK(i2c_master_transmit(mpu_dev->mpu_dev_handle, accel_cfg, sizeof(accel_cfg), -1));
 
 }
 
-void mpu6050::start()
+void start(mpu6050_dev_t *mpu_dev)
 {
     // Wake up sensor from sleep writing 0x00 to power management register
     uint8_t wake_cmd[2] = {0x6B, 0x00};
-    ESP_ERROR_CHECK(i2c_master_transmit(mpu_dev_handle, wake_cmd, sizeof(wake_cmd), -1));
+    ESP_ERROR_CHECK(i2c_master_transmit(mpu_dev->mpu_dev_handle, wake_cmd, sizeof(wake_cmd), -1));
 
 }
 
 
-void mpu6050::read(sensor_t sensor_type) {
+void read(mpu6050_dev_t *mpu_dev, sensor_t sensor_type) {
     uint8_t start_reg = 0x3B;  // Starting at ACCEL_XOUT_H
     uint8_t sensor_data[14];
 
-    ESP_ERROR_CHECK(i2c_master_transmit_receive(mpu_dev_handle, &start_reg, 1, sensor_data, sizeof(sensor_data), -1));
+    ESP_ERROR_CHECK(i2c_master_transmit_receive(mpu_dev->mpu_dev_handle, &start_reg, 1, sensor_data, sizeof(sensor_data), -1));
     int16_t raw_ax = (sensor_data[0] << 8) | sensor_data[1];
     int16_t raw_ay = (sensor_data[2] << 8) | sensor_data[3];
     int16_t raw_az = (sensor_data[4] << 8) | sensor_data[5];
@@ -59,8 +59,8 @@ void mpu6050::read(sensor_t sensor_type) {
     int16_t raw_gy = (sensor_data[10] << 8) | sensor_data[11];
     int16_t raw_gz = (sensor_data[12] << 8) | sensor_data[13];
 
-    float accel_scale = mpu6050_get_accel_scale(accel_sel);
-    float gyro_scale = mpu6050_get_gyro_scale(gyro_sel);
+    float accel_scale = mpu6050_get_accel_scale(mpu_dev->accel_sel);
+    float gyro_scale = mpu6050_get_gyro_scale(mpu_dev->gyro_sel);
 
     float ax = raw_ax / accel_scale;
     float ay = raw_ay / accel_scale;
