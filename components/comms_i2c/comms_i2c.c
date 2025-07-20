@@ -1,4 +1,4 @@
-#include "i2c_conf.h"
+#include "comms_i2c.h"
 
 i2c_master_bus_handle_t i2c_bus_handle;
 i2c_master_dev_handle_t mpu_dev_handle;
@@ -7,7 +7,7 @@ void i2c_bus_init(int i2c_port_, gpio_num_t scl_, gpio_num_t sda_, bool PULLUP_E
 {
     i2c_master_bus_config_t i2c_bus_conf = {
         .clk_source = I2C_CLK_SRC_DEFAULT,
-        .i2c_port = 1,
+        .i2c_port = i2c_port_,
         .scl_io_num = scl_,
         .sda_io_num = sda_,
         // .glitch_ignore_cnt = 7,
