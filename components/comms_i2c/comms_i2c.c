@@ -15,7 +15,7 @@ void i2c_bus_init(i2c_bus_controller *i2c_control, i2c_master_bus_handle_t i2c_b
     ESP_ERROR_CHECK(i2c_new_master_bus(&i2c_bus_conf, &i2c_control->i2c_bus_handle));
 }
 
-void i2c_add_new_device(i2c_bus_controller *i2c_control, i2c_master_dev_handle_t dev_handle, uint16_t dev_addr, uint32_t dev_speed_hz)
+void i2c_add_new_device(i2c_bus_controller *i2c_control, i2c_master_dev_handle_t *dev_handle, uint16_t dev_addr, uint32_t dev_speed_hz)
 {
     i2c_device_config_t device_config = {
         .device_address = dev_addr,
@@ -23,6 +23,6 @@ void i2c_add_new_device(i2c_bus_controller *i2c_control, i2c_master_dev_handle_t
     };
     
 
-    ESP_ERROR_CHECK(i2c_master_bus_add_device(i2c_control->i2c_bus_handle, &device_config, &dev_handle));
+    ESP_ERROR_CHECK(i2c_master_bus_add_device(i2c_control->i2c_bus_handle, &device_config, dev_handle));
 
 }
